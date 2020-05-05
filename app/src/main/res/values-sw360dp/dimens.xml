@@ -1,0 +1,24 @@
+<resources>
+    <dimen name="size_title_page">18sp</dimen>
+    <dimen name="pad_list_page">5dp</dimen>
+
+    <dimen name="pad_edittext_login">10dp</dimen>
+    <dimen name="stroke_shape">1dp</dimen>
+    <dimen name="radius_bg_title_login">5dp</dimen>
+    <dimen name="text_size_editext_login">18sp</dimen>
+    <dimen name="radius_bg_title_button_login">40dp</dimen>
+
+    <dimen name="size_text_sms_from">13sp</dimen>
+    <dimen name="size_text_sms_time">11sp</dimen>
+    <dimen name="pad_text_sms">11dp</dimen>
+    <dimen name="pad_text_tb_sms">6dp</dimen>
+    <dimen name="pad_text_tb_item_sms">4dp</dimen>
+    <dimen name="size_icon_sms_from">22dp</dimen>
+    <dimen name="size_boder_item">1dp</dimen>
+
+    <!--Menu Bottom-->
+    <dimen name="pad_tb_menu_bottom">1dp</dimen>
+    <dimen name="size_ic_menu_bottom">35dp</dimen>
+    <dimen name="pad_title_menu_bottom">2dp</dimen>
+    <dimen name="size_title_menu_bottom">14sp</dimen>
+</resources>

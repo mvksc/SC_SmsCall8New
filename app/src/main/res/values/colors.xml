@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#C99C13</color>
+    <color name="colorPrimaryDark">#dac375</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="color_progressbar">#FF4081</color>
+    <color name="bg_progressbar">#FFFFFF</color>
+    <color name="bg_title_login">#FFFFFF</color>
+    <color name="color_txt_wifi">#232323</color>
+    <color name="color_title_menu_bottom_s">#FFFFFF</color>
+    <color name="color_title_menu_bottom_u">#AAdac375</color>
+</resources>

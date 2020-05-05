@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">SC88</string>
+    <string name="title_menu_login">บันทึก</string>
+    <string name="title_bar_call">รายการโทร</string>
+    <string name="title_bar_sms">รายการข้อความ</string>
+    <string name="title_bar_setting">การตั้งค่า</string>
+    <string name="title_menu_call">การโทร</string>
+    <string name="title_menu_sms">ข้อความ</string>
+    <string name="title_menu_setting">ตั้งค่า</string>
+    <string name="title_no_connect">เชื่อมต่ออินเตอร์เน็ต</string>
+    <string name="title_save">บันทึกสำเร็จ</string>
+    <string name="title_action_net">รับทราบ</string>
+    <string name="txt_version">เวรอ์ชั่น : V.2</string>
+    <string name="txt_no_auto_sim">***ไม่สามารถดึงเบอร์โทรอัตโนมัติได้\nกรุณากรอกเบอร์โทรให้ถูกต้องแล้วกดบันทึก</string>
+    <string name="txt_add_wifi">เพิ่ม Wifi</string>
+    <string name="txt_add_wifi_ok">ตกลง</string>
+    <string name="txt_exit_app">กดอีกครั้งเพื่อออกจากแอพ</string>
+    <string name="txt_alert_sms">สั่นเตือนเมื่อข้อความเข้า</string>
+    <string name="txt_sms_from_server">แสดงข้อความในเครื่อง</string>
+</resources>

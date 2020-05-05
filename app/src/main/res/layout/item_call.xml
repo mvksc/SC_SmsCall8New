@@ -1,0 +1,166 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/lnContentItemCall"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#FFFFFF"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/pad_text_tb_item_sms"
+    android:paddingRight="@dimen/pad_text_tb_item_sms"
+    android:paddingTop="@dimen/size_boder_item"
+    android:paddingBottom="@dimen/size_boder_item">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/size_boder_item">
+
+                <ImageView
+                    android:id="@+id/imgStatusCall"
+                    android:layout_width="@dimen/size_icon_sms_from"
+                    android:layout_height="@dimen/size_icon_sms_from"
+                    android:scaleType="centerCrop" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center|right"
+                        android:paddingLeft="@dimen/pad_text_tb_sms"
+                        android:paddingRight="@dimen/size_boder_item"
+                        android:paddingBottom="@dimen/size_boder_item"
+                        android:text="จาก :"
+                        android:textColor="#4d4d4d"
+                        android:textSize="@dimen/size_text_sms_from"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center|right"
+                        android:paddingLeft="@dimen/pad_text_tb_sms"
+                        android:paddingRight="@dimen/size_boder_item"
+                        android:paddingTop="@dimen/size_boder_item"
+                        android:text="ถึง :"
+                        android:textColor="#4d4d4d"
+                        android:textSize="@dimen/size_text_sms_from"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingRight="@dimen/pad_text_tb_item_sms">
+
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:fillViewport="true">
+
+                        <TextView
+                            android:id="@+id/tvCallFrom"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:ellipsize="marquee"
+                            android:gravity="center|left"
+                            android:marqueeRepeatLimit="marquee_forever"
+                            android:paddingBottom="@dimen/size_boder_item"
+                            android:paddingLeft="@dimen/size_boder_item"
+                            android:paddingRight="@dimen/size_boder_item"
+                            android:singleLine="true"
+                            android:text="+66987654321,+66987654321"
+                            android:textColor="#4d4d4d"
+                            android:textSize="@dimen/size_text_sms_from"
+                            android:textStyle="bold" />
+                    </HorizontalScrollView>
+
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:fillViewport="true">
+
+                        <TextView
+                            android:id="@+id/tvCallTo"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center|left"
+                            android:paddingLeft="@dimen/size_boder_item"
+                            android:paddingRight="@dimen/size_boder_item"
+                            android:paddingTop="@dimen/size_boder_item"
+                            android:text="+66845167912"
+                            android:textColor="#4d4d4d"
+                            android:textSize="@dimen/size_text_sms_from"
+                            android:textStyle="bold" />
+                    </HorizontalScrollView>
+                </LinearLayout>
+
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingTop="@dimen/size_boder_item">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center|left"
+                    android:layout_weight="1">
+                    <ImageView
+                        android:id="@+id/imgStatusDateTime"
+                        android:layout_width="@dimen/size_icon_sms_from"
+                        android:layout_height="@dimen/size_icon_sms_from"
+                        android:scaleType="centerCrop"
+                        app:srcCompat="@drawable/ic_clock" />
+                    <TextView
+                        android:id="@+id/tvCallDateTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center|right"
+                        android:textColor="#514d48"
+                        android:textSize="@dimen/size_text_sms_time" />
+                </LinearLayout>
+                <TextView
+                    android:id="@+id/tvCallDuration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center|right"
+                    android:paddingLeft="@dimen/pad_text_tb_item_sms"
+                    android:paddingRight="@dimen/size_boder_item"
+                    android:layout_gravity="right"
+                    android:text="00:25:31 นาที"
+                    android:textSize="@dimen/size_text_sms_from" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/size_boder_item"
+        android:layout_marginTop="@dimen/pad_text_tb_sms"
+        android:layout_marginBottom="@dimen/pad_text_tb_item_sms"
+        android:background="@drawable/bg_boder_item_sms"/>
+</LinearLayout>
