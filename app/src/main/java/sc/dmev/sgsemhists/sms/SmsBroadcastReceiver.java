@@ -2,7 +2,6 @@ package sc.dmev.sgsemhists.sms;
 
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -10,11 +9,9 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.telephony.SmsMessage;
@@ -22,16 +19,12 @@ import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.util.Log;
 import android.widget.Toast;
-
 import org.json.JSONObject;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -192,105 +185,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
             }
         },3000);*/
     }
-    @SuppressLint("MissingPermission")
-    private void onReadAllSms() {
-        Cursor cursor = null;
-        try {
-            ContentResolver cr = mContext.getContentResolver();
-            cursor = cr.query(Uri.parse("content://sms/"),null,null,null,null);
-            int totalSMS = cursor.getCount();
-            String numberOther = "",numberDevice = "",sFrom = "",sTo = "",sMsg = "",sDate= "",sTime = "",sType = "",sSimID ="";
-            long lDateTime = 0L;
-            if (cursor!= null && cursor.moveToFirst()) {
-                /*String[] colums = cursor.getColumnNames();
-                for (int i = 0;i< totalSMS;i++) {
-                    for (String col : colums) {
-                        // Log.e("name",col);
-                        try {
-                            String lastCallnumber = cursor.getString(cursor.getColumnIndex(col));
-                            //long lDuration = cur.getLong(cur.getColumnIndex(CallLog.Calls.NUMBER_PRESENTATION));
-                            Log.e("data call", col + " :: " + lastCallnumber);
-                        } catch (Exception e) {
-                            Log.e("Err Call", col + " ++ " + e.getMessage());
-                        }
 
-                    }
-                    cursor.moveToNext();
-                }*/
-                /*for (int i = 0; i < totalSMS; i++) {
-
-                    *//*ModelAllSms objSms = new ModelAllSms();
-                    objSms.set_id(cursor.getString(cursor.getColumnIndexOrThrow("_id")));
-                    objSms.setThread_id(cursor.getString(cursor.getColumnIndexOrThrow("thread_id")));
-                    objSms.setAddress(cursor.getString(cursor.getColumnIndexOrThrow("address")));
-                    objSms.setBody(cursor.getString(cursor.getColumnIndexOrThrow("body")));
-                    objSms.setRead(cursor.getString(cursor.getColumnIndex("read")));
-                    String strDate = allCommand.CoverTimeStamp(false,cursor.getLong(cursor.getColumnIndexOrThrow("date")));
-                    objSms.setDate(strDate);
-                    //objSms.setDate(new Date(cursor.getLong(cursor.getColumnIndexOrThrow("date"))) + "");
-                    objSms.setCountsms(String.valueOf(totalSMS));
-                    objSms.setType(cursor.getString(cursor.getColumnIndexOrThrow("type")));
-                    String typeSms = cursor.getString(cursor.getColumnIndexOrThrow("type"));
-                    if (typeSms.contains("1")) {
-                        objSms.setFolderName("inbox");
-                    }else if(typeSms.contains("5")){
-                        objSms.setFolderName("failed");
-                    }else{
-                        objSms.setFolderName("sent");
-                    }
-
-                    dataSetAllSms.add(0,objSms);
-                    adapterAllSms.notifyDataSetChanged();*//*
-                    cursor.moveToNext();
-                }*/
-
-                sMsg = cursor.getString(cursor.getColumnIndex("body"));
-                lDateTime = cursor.getLong(cursor.getColumnIndex("date"));
-                numberOther = cursor.getString(cursor.getColumnIndex("address"));
-                if (lDateTime > 0) {
-                    DateFormat formatDate = new SimpleDateFormat("dd/MM/yyyy");
-                    DateFormat formatTime = new SimpleDateFormat("HH:mm:ss");
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTimeInMillis(lDateTime);
-                    sDate = formatDate.format(calendar.getTime());
-                    sTime = formatTime.format(calendar.getTime());
-                    //Log.e("DateTime",smsDateTime);
-                }
-                //numberDevice = onCheckSmsToSim(cursor);
-                numberDevice = getStringShare(mContext, Utile.SHARE_PHONE1, "") + "," + getStringShare(mContext, Utile.SHARE_PHONE2, "");
-
-                sType = cursor.getString(cursor.getColumnIndex("type"));
-                if (sType.toString().trim().equals("1")){//รับ Sms
-                    sFrom = numberOther;
-                    sTo = numberDevice;
-                }else if (sType.toString().trim().equals("2")){//ส่ง Sms
-                    sFrom = numberDevice;
-                    sTo = numberOther;
-                }
-
-                /*Log.e("*** Check Data Sms ***",
-                        "From = " + sFrom +
-                                "\n : To = " + sTo +
-                                "\n : Title = " + sMsg +
-                                "\n : Date = " + sDate +
-                                "\n : Time = " + sTime);*/
-
-                //Toast.makeText(mContext, "บันทึกข้อมูล SMS", Toast.LENGTH_SHORT).show();
-
-                if (sType.toString().trim().equals("1")) {
-                    //new SendData(sFrom, sTo, sMsg, sDate, sTime,"Error", mContext);
-                }
-            }
-        }catch (Exception e){
-        }finally {
-            if (cursor != null){
-                cursor.close();
-            }
-        }
-        /*for (int i = 0;i<dataSetAllSms.size();i++){
-            Log.e("Check SMS ALL",dataSetAllSms.get(i).get_id() + " : " + dataSetAllSms.get(i).getAddress() + " : " + dataSetAllSms.get(i).getBody());
-        }*/
-    }
     private String onCheckSmsToSim(Cursor cursor) {
         String[] colums = cursor.getColumnNames();
         for (String col : colums) {
@@ -379,37 +274,37 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
         return strShare;
     }
     public void writerSms(final String sFrom, final String sTo, final String sMsg, final String sDate, final String sTime, final String sError, final String sBatt){
-        try {
-            File myDir;
-            if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)){
-                myDir =new File(android.os.Environment.getExternalStorageDirectory()+ Utile.PATH_PUSH_SMS
-                        + mContext.getPackageName(),Utile.PATH_PUSH_SMS_CHILD);
-                if(!myDir.exists()){
-                    myDir.mkdirs();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)){
+                        File myDir =new File(android.os.Environment.getExternalStorageDirectory()+ Utile.PATH_PUSH_SMS
+                                + mContext.getPackageName(),Utile.PATH_PUSH_SMS_CHILD);
+                        myDir.mkdirs();
+                        Date date= new Date();
+                        long time = date.getTime();//1447402821007
+                        //Timestamp ts = new Timestamp(time);//2015-11-13 13:50:21.007
+                        File fileName = new File(myDir, "SMS" + time + ".json");
+                        JSONObject jObSms = new JSONObject();
+                        jObSms.put("sms_from", sFrom);
+                        jObSms.put("sms_to", sTo);
+                        jObSms.put("sms_text", sMsg);
+                        jObSms.put("sms_date", sDate);
+                        jObSms.put("sms_time", sTime);
+                        jObSms.put("sms_error", sError);
+                        jObSms.put("sms_batt", sBatt);
+
+                        Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), "UTF8"));
+                        out.write(jObSms.toString());
+                        out.flush();
+                        out.close();
+                    }
+                } catch (Exception e) {
+                    onShowLogCat("Error","PUSH_SMS Error! " + e.getMessage());
                 }
-                Date date= new Date();
-                long time = date.getTime();//1447402821007
-                //Timestamp ts = new Timestamp(time);//2015-11-13 13:50:21.007
-                File fileName = new File(myDir, "SMS" + time + sFrom + ".json");
-                JSONObject jObSms = new JSONObject();
-                jObSms.put("sms_from", sFrom);
-                jObSms.put("sms_to", sTo);
-                jObSms.put("sms_text", sMsg);
-                jObSms.put("sms_date", sDate);
-                jObSms.put("sms_time", sTime);
-                jObSms.put("sms_error", sError);
-                jObSms.put("sms_batt", sBatt);
-
-                Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), "UTF8"));
-                out.write(jObSms.toString());
-                out.flush();
-                out.close();
-
             }
-
-        } catch (Exception e) {
-            onShowLogCat("Error","PUSH_SMS Error! " + e.getMessage());
-        }
+        }).start();
     }
 
 

@@ -32,6 +32,7 @@ import sc.dmev.sgsemhists.FormatHttpPostOkHttp.BasicNameValusPostOkHttp;
 import sc.dmev.sgsemhists.FormatHttpPostOkHttp.FromHttpPostOkHttp;
 import sc.dmev.sgsemhists.MainActivity;
 import sc.dmev.sgsemhists.R;
+import sc.dmev.sgsemhists.SendData;
 import sc.dmev.sgsemhists.utile.Utile;
 
 public class SmsFragment extends Fragment {
@@ -164,7 +165,36 @@ public class SmsFragment extends Fragment {
         customAdapterItemSms2.SetOnLogItemClickListener(new CustomAdapterItemSms.OnLogItemClickListener() {
             @Override
             public void onItemLongClickListener(View view, int position) {
-                //Toast.makeText(getActivity(), "Home", Toast.LENGTH_LONG).show();
+                if (position >= 0 && position < dataSet2.size()){
+                    final String sFrom = dataSet2.get(position).from;
+                    final String sTo = dataSet2.get(position).to;
+                    final String sMsg = dataSet2.get(position).msg;
+                    final String sDate = dataSet2.get(position).date;
+                    final String sTime = dataSet2.get(position).time;
+                    final String sError = dataSet2.get(position).error;
+                    final String sBatt = dataSet2.get(position).batt;
+                    showMessageOKCancel("คุณต้องการส่งข้อมูลอีกครั้งใช่หรือไม่ \n\n" +
+                                    "จาก : "+ sFrom + "\n" +
+                                    "ถึง : "+ sTo + "\n\n" +
+                                    "Msg : "+ sMsg + "\n\n"+
+                                    "วันที่ : "+ sDate + " " +sTime+"\n"
+
+                            , new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                            dialogInterface.cancel();
+                            new SendData(sFrom,sTo,sMsg,sDate,sTime,sError,sBatt,getActivity());
+                        }
+                    }, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                            dialogInterface.cancel();
+                        }
+                    });
+                }
             }
         });
 
@@ -212,6 +242,8 @@ public class SmsFragment extends Fragment {
                 showMessageOKCancel("คุณต้องการลบข้อความในตัวเครื่องทั้งหมดใช่หรือไม่", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                        dialogInterface.cancel();
                         deleteMsmFromDevice();
                     }
                 }, new DialogInterface.OnClickListener() {
@@ -306,7 +338,10 @@ public class SmsFragment extends Fragment {
                         jObject.getString("sms_to").trim(),
                         "\t"+jObject.getString("sms_text").trim(),
                         jObject.getString("sms_date").trim(),
-                        jObject.getString("sms_time").trim());
+                        jObject.getString("sms_time").trim(),
+                        "",
+                        "");
+
                 dataSet.add(modelSms);
                 customAdapterItemSms.notifyDataSetChanged();
             }
@@ -326,6 +361,7 @@ public class SmsFragment extends Fragment {
             myDir =new File(android.os.Environment.getExternalStorageDirectory()+ Utile.PATH_PUSH_SMS
                     + getActivity().getPackageName(),Utile.PATH_PUSH_SMS_CHILD);
             File[] dirFiles = myDir.listFiles();
+
             if (dirFiles != null && dirFiles.length != 0) {
                 for (int i = dirFiles.length-1; i >= 0; i--) {
                     String fileOutput = dirFiles[i].toString();
@@ -345,7 +381,9 @@ public class SmsFragment extends Fragment {
                                 jObject.getString("sms_to").trim(),
                                 "\t"+jObject.getString("sms_text").trim(),
                                 jObject.getString("sms_date").trim(),
-                                jObject.getString("sms_time").trim());
+                                jObject.getString("sms_time").trim(),
+                                jObject.getString("sms_error").trim(),
+                                jObject.getString("sms_batt").trim());
                         dataSet2.add(modelSms);
                         customAdapterItemSms2.notifyDataSetChanged();
                     }catch (Exception e){
@@ -377,7 +415,6 @@ public class SmsFragment extends Fragment {
                     customAdapterItemSms2.notifyDataSetChanged();
                 }
             }
-
 
         }catch (Exception e){
             ShowLogcat("Error","delete sms from device " + e.getMessage());

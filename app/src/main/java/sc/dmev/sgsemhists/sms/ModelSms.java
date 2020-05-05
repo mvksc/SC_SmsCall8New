@@ -7,7 +7,7 @@ import android.os.Parcelable;
  * Created by Varayut on 15/11/2558.
  */
 public class ModelSms implements Parcelable {
-    public String from,to,msg,date,time;
+    public String from,to,msg,date,time,error,batt;
 
     public String getDate() {
         return date;
@@ -47,12 +47,30 @@ public class ModelSms implements Parcelable {
         this.to = to;
     }
 
-    public ModelSms(String from,String to,String msg,String date,String time){
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
+    public String getBatt() {
+        return batt;
+    }
+
+    public void setBatt(String batt) {
+        this.batt = batt;
+    }
+
+    public ModelSms(String from, String to, String msg, String date, String time, String error, String batt){
         this.from = from;
         this.to = to;
         this.msg = msg;
         this.date = date;
         this.time = time;
+        this.error = error;
+        this.batt = batt;
     }
 
     protected ModelSms(Parcel in) {
@@ -61,6 +79,8 @@ public class ModelSms implements Parcelable {
         msg = in.readString();
         date = in.readString();
         time = in.readString();
+        error = in.readString();
+        batt = in.readString();
     }
 
     public static final Creator<ModelSms> CREATOR = new Creator<ModelSms>() {
@@ -91,5 +111,7 @@ public class ModelSms implements Parcelable {
         out.writeString(msg);
         out.writeString(date);
         out.writeString(time);
+        out.writeString(error);
+        out.writeString(batt);
     }
 }
