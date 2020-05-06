@@ -27,6 +27,8 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import sc.dmev.sgsemhists.FormatHttpPostOkHttp.BasicNameValusPostOkHttp;
 import sc.dmev.sgsemhists.FormatHttpPostOkHttp.FromHttpPostOkHttp;
+import sc.dmev.sgsemhists.bus.BusProvider;
+import sc.dmev.sgsemhists.bus.ModelEvenBus;
 import sc.dmev.sgsemhists.utile.Utile;
 import sc.dmev.sgsemhists.wifi.WifiProvider;
 
@@ -207,25 +209,12 @@ public class SendData {
                 super.handleMessage(msg);
                 //run on main thread
                 try {
-                    String data = (String) msg.obj.toString().trim();
-                    JSONObject jObject = new JSONObject(CoverStringFromServer_One(data.toString().trim()));
-                    onShowLogCat("Check Sms",jObject.getString("status").toString().trim() + " : " + jObject.getString("msg").toString().trim());
-                    if (jObject.getString("status").toString().trim().equals("1")){
-                        if (backgroundHandlerThreadSms != null){
-                            backgroundHandlerThreadSms.quit();
-                        }
-                    }else {
-                        Message msgMain = new Message();
-                        msgMain.arg1 = 0;
-                        msgMain.arg2 = msg.arg2;
-                        handlerSms.sendMessageDelayed(msgMain,(1000 * 10));
-                    }
+                    ModelEvenBus evenBus = new ModelEvenBus();
+                    evenBus.setKeyEvenBus(3);
+                    BusProvider.getInstance().post(evenBus);
                 }catch (Exception e){
                     onShowLogCat("Check Sms","Error get data result from server " + e.getMessage());
-                    Message msgMain = new Message();
-                    msgMain.arg1 = 0;
-                    msgMain.arg2 = msg.arg2;
-                    handlerSms.sendMessageDelayed(msgMain,(1000 * 10));
+
                 }
             }
         };
@@ -284,10 +273,6 @@ public class SendData {
                     }
                     writerSms(sNameFile,sFrom,sTo,sMsg,sDate,sTime,sError,batt,1,context);//ส่งแล้ว ไม่มี Error เขียน SMS ลงเครื่อง
 
-                    /*Message msgMainResultSms = new Message();
-                    msgMainResultSms.arg2 = arg2;
-                    msgMainResultSms.obj = data;
-                    handlerSendSms.sendMessage(msgMainResultSms);*/
                 }catch (Exception e){
                     if (backgroundHandlerThreadSms != null){
                         backgroundHandlerThreadSms.quit();
@@ -339,6 +324,10 @@ public class SendData {
                         out2.write(jObSms.toString());
                         out2.flush();
                         out2.close();
+
+                        /*Message msgMainResultSms = new Message();
+                        msgMainResultSms.arg1 = 3;
+                        handlerSendSms.sendMessage(msgMainResultSms);*/
                     }
                 } catch (Exception e) {
                     onShowLogCat("Error","PUSH_SMS Error! " + e.getMessage());

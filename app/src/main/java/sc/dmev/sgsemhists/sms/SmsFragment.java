@@ -37,6 +37,7 @@ import sc.dmev.sgsemhists.FormatHttpPostOkHttp.FromHttpPostOkHttp;
 import sc.dmev.sgsemhists.MainActivity;
 import sc.dmev.sgsemhists.R;
 import sc.dmev.sgsemhists.SendData;
+import sc.dmev.sgsemhists.bus.BusProvider;
 import sc.dmev.sgsemhists.bus.ModelEvenBus;
 import sc.dmev.sgsemhists.utile.Utile;
 
@@ -128,11 +129,22 @@ public class SmsFragment extends Fragment {
         }
         setEventToView();
     }
+    @Override
+    public void onStart() {
+        super.onStart();
+        BusProvider.getInstance().register(this);
+    }
+    @Override
+    public void onStop() {
+        super.onStop();
+        BusProvider.getInstance().unregister(this);
+    }
     @Subscribe
     public void onStanByEvenBus(ModelEvenBus evenBus){
         if (evenBus != null){
+            //Log.e("Check",evenBus.getKeyEvenBus() +"");
             if (evenBus.getKeyEvenBus() == 3){//Update list sms from device
-                customAdapterItemSms2.notifyDataSetChanged();
+                customAdapterItemSms2.notifyItemChanged(0);
             }
         }
     }
@@ -397,7 +409,7 @@ public class SmsFragment extends Fragment {
                         br.close();
                         JSONTokener tokener = new JSONTokener(builder.toString());
                         JSONObject jObject = new JSONObject(allCommand.CoverStringFromServer_One(tokener.toString()));
-                        Log.e("Json",i + ". " + jObject.getString("sms_filename") + " : " + jObject.getInt("sms_sented"));
+                        //Log.e("Json",i + ". " + jObject.getString("sms_filename") + " : " + jObject.getInt("sms_sented"));
                         ModelSms modelSms = new ModelSms(
                                 jObject.getString("sms_filename").trim(),
                                 jObject.getString("sms_from").trim(),
