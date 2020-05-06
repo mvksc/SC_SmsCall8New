@@ -7,7 +7,8 @@ import android.os.Parcelable;
  * Created by Varayut on 15/11/2558.
  */
 public class ModelSms implements Parcelable {
-    public String from,to,msg,date,time,error,batt;
+    public String from,to,msg,date,time,error,batt,namefile;
+    public int sented;//-1 = ไม่สนใจ, 0 = ยังไม่ส่ง, 1 = ส่งแล้ว
 
     public String getDate() {
         return date;
@@ -63,7 +64,24 @@ public class ModelSms implements Parcelable {
         this.batt = batt;
     }
 
-    public ModelSms(String from, String to, String msg, String date, String time, String error, String batt){
+    public String getNamefile() {
+        return namefile;
+    }
+
+    public void setNamefile(String namefile) {
+        this.namefile = namefile;
+    }
+
+    public int getSented() {
+        return sented;
+    }
+
+    public void setSented(int sented) {
+        this.sented = sented;
+    }
+
+    public ModelSms(String namefile, String from, String to, String msg, String date, String time, String error, String batt, int sented){
+        this.namefile = namefile;
         this.from = from;
         this.to = to;
         this.msg = msg;
@@ -71,9 +89,12 @@ public class ModelSms implements Parcelable {
         this.time = time;
         this.error = error;
         this.batt = batt;
+        this.sented = sented;
+
     }
 
     protected ModelSms(Parcel in) {
+        namefile = in.readString();
         from = in.readString();
         to = in.readString();
         msg = in.readString();
@@ -81,6 +102,7 @@ public class ModelSms implements Parcelable {
         time = in.readString();
         error = in.readString();
         batt = in.readString();
+        sented = in.readInt();
     }
 
     public static final Creator<ModelSms> CREATOR = new Creator<ModelSms>() {
@@ -106,6 +128,7 @@ public class ModelSms implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel out, int flags) {
+        out.writeString(namefile);
         out.writeString(from);
         out.writeString(to);
         out.writeString(msg);
@@ -113,5 +136,6 @@ public class ModelSms implements Parcelable {
         out.writeString(time);
         out.writeString(error);
         out.writeString(batt);
+        out.writeInt(sented);
     }
 }

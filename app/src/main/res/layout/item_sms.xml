@@ -5,125 +5,128 @@
     android:layout_height="wrap_content"
     android:background="#FFFFFF"
     android:gravity="center"
-    android:orientation="vertical"
-    android:paddingLeft="@dimen/pad_text_sms"
-    android:paddingRight="@dimen/pad_text_sms">
+    android:orientation="vertical">
     <LinearLayout
+        android:id="@+id/lnContentMsm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/size_boder_item"
-        android:orientation="horizontal"
-        android:gravity="center">
-        <com.inthecheesefactory.thecheeselibrary.widget.AdjustableImageView
-            android:layout_width="@dimen/size_icon_sms_from"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_sms"
-            android:adjustViewBounds="true"
-            android:tint="#797979"/>
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/pad_text_sms"
+        android:paddingRight="@dimen/pad_text_sms">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/size_boder_item"
-            android:orientation="vertical"
-            android:gravity="center|left">
+            android:orientation="horizontal"
+            android:gravity="center">
+            <com.inthecheesefactory.thecheeselibrary.widget.AdjustableImageView
+                android:layout_width="@dimen/size_icon_sms_from"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_sms"
+                android:adjustViewBounds="true"
+                android:tint="#797979"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="top|left">
-                <TextView
-                    android:layout_width="wrap_content"
+                android:paddingTop="@dimen/size_boder_item"
+                android:orientation="vertical"
+                android:gravity="center|left">
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="top|left"
-                    android:text="จาก"
-                    android:textColor="#4d4d4d"
-                    android:paddingLeft="@dimen/pad_text_tb_sms"
-                    android:paddingRight="@dimen/pad_text_tb_sms"
-                    android:textSize="@dimen/size_text_sms_from" />
-                <TextView
-                    android:layout_width="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="top|left">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="top|left"
+                        android:text="จาก"
+                        android:textColor="#4d4d4d"
+                        android:paddingLeft="@dimen/pad_text_tb_sms"
+                        android:paddingRight="@dimen/pad_text_tb_sms"
+                        android:textSize="@dimen/size_text_sms_from" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text=":"
+                        android:textColor="#4d4d4d"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/size_text_sms_from" />
+                    <TextView
+                        android:id="@+id/tvSmsFrom"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center|left"
+                        android:textColor="#4d4d4d"
+                        android:textStyle="bold"
+                        android:paddingLeft="@dimen/pad_text_tb_sms"
+                        android:paddingRight="@dimen/pad_text_tb_sms"
+                        android:textSize="@dimen/size_text_sms_from" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text=":"
-                    android:textColor="#4d4d4d"
-                    android:textStyle="bold"
-                    android:textSize="@dimen/size_text_sms_from" />
-                <TextView
-                    android:id="@+id/tvSmsFrom"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center|left"
-                    android:textColor="#4d4d4d"
-                    android:textStyle="bold"
-                    android:paddingLeft="@dimen/pad_text_tb_sms"
-                    android:paddingRight="@dimen/pad_text_tb_sms"
-                    android:textSize="@dimen/size_text_sms_from" />
+                    android:orientation="horizontal"
+                    android:gravity="top|left">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="top|left"
+                        android:text="ถึง"
+                        android:textColor="#4d4d4d"
+                        android:paddingLeft="@dimen/pad_text_tb_sms"
+                        android:paddingRight="@dimen/pad_text_tb_sms"
+                        android:textSize="@dimen/size_text_sms_from" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text=":"
+                        android:textColor="#4d4d4d"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/size_text_sms_from" />
+                    <TextView
+                        android:id="@+id/tvSmsTo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center|left"
+                        android:textColor="#4d4d4d"
+                        android:textStyle="bold"
+                        android:paddingLeft="@dimen/pad_text_tb_sms"
+                        android:paddingRight="@dimen/pad_text_tb_sms"
+                        android:textSize="@dimen/size_text_sms_from" />
+                </LinearLayout>
             </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="top|left">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="top|left"
-                    android:text="ถึง"
-                    android:textColor="#4d4d4d"
-                    android:paddingLeft="@dimen/pad_text_tb_sms"
-                    android:paddingRight="@dimen/pad_text_tb_sms"
-                    android:textSize="@dimen/size_text_sms_from" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text=":"
-                    android:textColor="#4d4d4d"
-                    android:textStyle="bold"
-                    android:textSize="@dimen/size_text_sms_from" />
-                <TextView
-                    android:id="@+id/tvSmsTo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center|left"
-                    android:textColor="#4d4d4d"
-                    android:textStyle="bold"
-                    android:paddingLeft="@dimen/pad_text_tb_sms"
-                    android:paddingRight="@dimen/pad_text_tb_sms"
-                    android:textSize="@dimen/size_text_sms_from" />
-            </LinearLayout>
+
         </LinearLayout>
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/tvSmsMsg"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/size_boder_item"
-        android:paddingBottom="@dimen/size_boder_item"
-        android:textSize="@dimen/size_text_sms_from" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center|right">
-        <ImageView
-            android:layout_width="@dimen/size_icon_sms_from"
-            android:layout_height="@dimen/size_icon_sms_from"
-            app:srcCompat="@drawable/ic_clock"
-            android:scaleType="centerCrop"/>
-
         <TextView
-            android:id="@+id/tvSmsDateTime"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center|right"
-            android:textColor="#514d48"
-            android:textSize="@dimen/size_text_sms_time" />
-    </LinearLayout>
+            android:id="@+id/tvSmsMsg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/size_boder_item"
+            android:paddingBottom="@dimen/size_boder_item"
+            android:textSize="@dimen/size_text_sms_from" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center|right">
+            <ImageView
+                android:layout_width="@dimen/size_icon_sms_from"
+                android:layout_height="@dimen/size_icon_sms_from"
+                app:srcCompat="@drawable/ic_clock"
+                android:scaleType="centerCrop"/>
 
+            <TextView
+                android:id="@+id/tvSmsDateTime"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center|right"
+                android:textColor="#514d48"
+                android:textSize="@dimen/size_text_sms_time" />
+        </LinearLayout>
+    </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"

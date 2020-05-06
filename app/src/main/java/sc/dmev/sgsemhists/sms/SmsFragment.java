@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.inthecheesefactory.thecheeselibrary.widget.AdjustableImageView;
+import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -25,6 +26,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import sc.dmev.sgsemhists.AllCommand;
 import sc.dmev.sgsemhists.BuildConfig;
@@ -33,6 +37,7 @@ import sc.dmev.sgsemhists.FormatHttpPostOkHttp.FromHttpPostOkHttp;
 import sc.dmev.sgsemhists.MainActivity;
 import sc.dmev.sgsemhists.R;
 import sc.dmev.sgsemhists.SendData;
+import sc.dmev.sgsemhists.bus.ModelEvenBus;
 import sc.dmev.sgsemhists.utile.Utile;
 
 public class SmsFragment extends Fragment {
@@ -123,7 +128,14 @@ public class SmsFragment extends Fragment {
         }
         setEventToView();
     }
-
+    @Subscribe
+    public void onStanByEvenBus(ModelEvenBus evenBus){
+        if (evenBus != null){
+            if (evenBus.getKeyEvenBus() == 3){//Update list sms from device
+                customAdapterItemSms2.notifyDataSetChanged();
+            }
+        }
+    }
     private void setEventToView() {
         swipeRefreshSms.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -166,6 +178,7 @@ public class SmsFragment extends Fragment {
             @Override
             public void onItemLongClickListener(View view, int position) {
                 if (position >= 0 && position < dataSet2.size()){
+                    final String sFileName = dataSet2.get(position).namefile;
                     final String sFrom = dataSet2.get(position).from;
                     final String sTo = dataSet2.get(position).to;
                     final String sMsg = dataSet2.get(position).msg;
@@ -173,6 +186,7 @@ public class SmsFragment extends Fragment {
                     final String sTime = dataSet2.get(position).time;
                     final String sError = dataSet2.get(position).error;
                     final String sBatt = dataSet2.get(position).batt;
+                    final int sented = dataSet2.get(position).sented;
                     showMessageOKCancel("คุณต้องการส่งข้อมูลอีกครั้งใช่หรือไม่ \n\n" +
                                     "จาก : "+ sFrom + "\n" +
                                     "ถึง : "+ sTo + "\n\n" +
@@ -185,7 +199,7 @@ public class SmsFragment extends Fragment {
                         public void onClick(DialogInterface dialogInterface, int i) {
                             dialogInterface.dismiss();
                             dialogInterface.cancel();
-                            new SendData(sFrom,sTo,sMsg,sDate,sTime,sError,sBatt,getActivity());
+                            new SendData(sFileName,sFrom,sTo,sMsg,sDate,sTime,sError,sBatt,getActivity());
                         }
                     }, new DialogInterface.OnClickListener() {
                         @Override
@@ -334,13 +348,15 @@ public class SmsFragment extends Fragment {
             for (int i = 0;i< jArray.length();i++){
                 jObject = jArray.getJSONObject(i);
                 ModelSms modelSms = new ModelSms(
+                        "",
                         jObject.getString("sms_from").trim(),
                         jObject.getString("sms_to").trim(),
                         "\t"+jObject.getString("sms_text").trim(),
                         jObject.getString("sms_date").trim(),
                         jObject.getString("sms_time").trim(),
                         "",
-                        "");
+                        "",
+                        -1);
 
                 dataSet.add(modelSms);
                 customAdapterItemSms.notifyDataSetChanged();
@@ -363,11 +379,16 @@ public class SmsFragment extends Fragment {
             File[] dirFiles = myDir.listFiles();
 
             if (dirFiles != null && dirFiles.length != 0) {
-                for (int i = dirFiles.length-1; i >= 0; i--) {
-                    String fileOutput = dirFiles[i].toString();
+                List<File> directoryListing = new ArrayList<File>();
+                directoryListing.addAll(Arrays.asList(dirFiles));
+                Collections.sort(directoryListing, new SortFileName());
+                //Collections.sort(directoryListing, new SortFolder());
+
+                for (int i =/* dirFiles.length-1*/directoryListing.size()-1; i >= 0; i--) {
+                    String fileOutput = /*dirFiles[i].toString();*/ directoryListing.get(i).toString();
                     StringBuilder builder = new StringBuilder();
                     try {
-                        BufferedReader br = new BufferedReader(new FileReader(dirFiles[i]));
+                        BufferedReader br = new BufferedReader(new FileReader(/*dirFiles[i]*/directoryListing.get(i)));
                         String line;
                         while ((line = br.readLine())!=null){
                             builder.append(line);
@@ -376,14 +397,17 @@ public class SmsFragment extends Fragment {
                         br.close();
                         JSONTokener tokener = new JSONTokener(builder.toString());
                         JSONObject jObject = new JSONObject(allCommand.CoverStringFromServer_One(tokener.toString()));
+                        Log.e("Json",i + ". " + jObject.getString("sms_filename") + " : " + jObject.getInt("sms_sented"));
                         ModelSms modelSms = new ModelSms(
+                                jObject.getString("sms_filename").trim(),
                                 jObject.getString("sms_from").trim(),
                                 jObject.getString("sms_to").trim(),
                                 "\t"+jObject.getString("sms_text").trim(),
                                 jObject.getString("sms_date").trim(),
                                 jObject.getString("sms_time").trim(),
                                 jObject.getString("sms_error").trim(),
-                                jObject.getString("sms_batt").trim());
+                                jObject.getString("sms_batt").trim(),
+                                jObject.getInt("sms_sented"));
                         dataSet2.add(modelSms);
                         customAdapterItemSms2.notifyDataSetChanged();
                     }catch (Exception e){
@@ -431,6 +455,26 @@ public class SmsFragment extends Fragment {
     private void ShowLogcat(String tag,String title){
         if (BuildConfig.DEBUG){
             Log.e("***" + tag + "***","Sms : " + title);
+        }
+    }
+    //sorts based on the files name
+    public class SortFileName implements Comparator<File> {
+        @Override
+        public int compare(File f1, File f2) {
+            return f1.getName().compareTo(f2.getName());
+        }
+    }
+
+    //sorts based on a file or folder. folders will be listed first
+    public class SortFolder implements Comparator<File> {
+        @Override
+        public int compare(File f1, File f2) {
+            if (f1.isDirectory() == f2.isDirectory())
+                return 0;
+            else if (f1.isDirectory() && !f2.isDirectory())
+                return -1;
+            else
+                return 1;
         }
     }
 }

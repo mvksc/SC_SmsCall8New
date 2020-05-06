@@ -37,6 +37,13 @@ public class CustomAdapterItemSms extends RecyclerView.Adapter<CustomAdapterItem
         viewHolder.tvSmsTo.setText(mModleSms.get(position).getTo());
         viewHolder.tvSmsMsg.setText(mModleSms.get(position).getMsg());
         viewHolder.tvSmsDateTime.setText(mModleSms.get(position).getDate() + " " + mModleSms.get(position).getTime());
+
+        if (mModleSms.get(position).getSented() == 0){
+            viewHolder.lnContentMsm.setBackgroundResource(R.color.color_bg_not_sent_sms);
+        }else {
+            viewHolder.lnContentMsm.setBackgroundResource(R.color.color_bg_sent_sms);
+        }
+
         viewHolder.lnContentItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -60,7 +67,7 @@ public class CustomAdapterItemSms extends RecyclerView.Adapter<CustomAdapterItem
 
    public class ViewHolder extends RecyclerView.ViewHolder{
         public TextView tvSmsFrom,tvSmsTo,tvSmsMsg,tvSmsDateTime;
-        public LinearLayout lnContentItem;
+        public LinearLayout lnContentItem,lnContentMsm;
         public ViewHolder(View itemView) {
             super(itemView);
             tvSmsFrom = (TextView) itemView.findViewById(R.id.tvSmsFrom);
@@ -68,6 +75,7 @@ public class CustomAdapterItemSms extends RecyclerView.Adapter<CustomAdapterItem
             tvSmsMsg = (TextView) itemView.findViewById(R.id.tvSmsMsg);
             tvSmsDateTime = (TextView) itemView.findViewById(R.id.tvSmsDateTime);
             lnContentItem = (LinearLayout) itemView.findViewById(R.id.lnContentItem);
+            lnContentMsm = itemView.findViewById(R.id.lnContentMsm);
         }
     }
 

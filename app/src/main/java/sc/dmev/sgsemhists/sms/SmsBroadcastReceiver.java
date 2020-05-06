@@ -172,8 +172,10 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
                         "\n  Date = " + sDate +
                         "\n  Time = " + sTime +
                         "\n  Error = " + sError);*/
-                writerSms(sFrom,sTo,sMsg,sDate,sTime,sError,batt);
-                new SendData(sFrom,sTo,sMsg,sDate,sTime,sError,batt,context);
+
+                //writerSms(nameFile,sFrom,sTo,sMsg,sDate,sTime,sError,batt);
+                String nameFile = "SMS" + System.currentTimeMillis() + ".json";
+                new SendData(nameFile,sFrom,sTo,sMsg,sDate,sTime,sError,batt,context);
             }
         }catch (Exception e){
             onShowLogCat("Error","save msm error " + e.getMessage());
@@ -272,39 +274,6 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
                 .getSharedPreferences(Utile.SHARE_DATA, Context.MODE_PRIVATE);
         boolean strShare = shLang.getBoolean(strKey, strDe);
         return strShare;
-    }
-    public void writerSms(final String sFrom, final String sTo, final String sMsg, final String sDate, final String sTime, final String sError, final String sBatt){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)){
-                        File myDir =new File(android.os.Environment.getExternalStorageDirectory()+ Utile.PATH_PUSH_SMS
-                                + mContext.getPackageName(),Utile.PATH_PUSH_SMS_CHILD);
-                        myDir.mkdirs();
-                        Date date= new Date();
-                        long time = date.getTime();//1447402821007
-                        //Timestamp ts = new Timestamp(time);//2015-11-13 13:50:21.007
-                        File fileName = new File(myDir, "SMS" + time + ".json");
-                        JSONObject jObSms = new JSONObject();
-                        jObSms.put("sms_from", sFrom);
-                        jObSms.put("sms_to", sTo);
-                        jObSms.put("sms_text", sMsg);
-                        jObSms.put("sms_date", sDate);
-                        jObSms.put("sms_time", sTime);
-                        jObSms.put("sms_error", sError);
-                        jObSms.put("sms_batt", sBatt);
-
-                        Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), "UTF8"));
-                        out.write(jObSms.toString());
-                        out.flush();
-                        out.close();
-                    }
-                } catch (Exception e) {
-                    onShowLogCat("Error","PUSH_SMS Error! " + e.getMessage());
-                }
-            }
-        }).start();
     }
 
 
