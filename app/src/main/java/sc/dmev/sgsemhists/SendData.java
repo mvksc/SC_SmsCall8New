@@ -45,7 +45,7 @@ public class SendData {
         backgroundHandlerThreadSms = new HandlerThread("backgroundHandlerThreadSms");
         backgroundHandlerThreadSms.start();
         //backgroundHandlerThreadSms.quit();
-        backgroundHandlerSms = new Handler(backgroundHandlerThreadSms.getLooper()){
+        backgroundHandlerSms = new Handler(backgroundHandlerThreadSms.getLooper()){//1.ตรวจสอบการ Internet ด้วยการเชื่อมต่อ web site ดู
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
@@ -54,18 +54,17 @@ public class SendData {
                 Message msgMainSms = new Message();
                 msgMainSms.arg1 = (isNetwork) ? 1 : -1;
                 msgMainSms.arg2 = msg.arg2;
-                mainHandlerSms.sendMessage(msgMainSms);
+                mainHandlerSms.sendMessage(msgMainSms);//1.1 ส่งไป mainHandlerSms ทำงานต่อ
             }
         };
-        mainHandlerSms = new Handler(Looper.getMainLooper()){
+        mainHandlerSms = new Handler(Looper.getMainLooper()){//2.ตรวจสอบ wifi หากมีการตั้งค่าไว้ ให้ทำการเชื่อมต่อ หากไม่มีก็จะสิ้นสุดการส่งข้อความทันที
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 //run with main thread
-                onShowLogCat("Check SMS","ตรวจสอบ wifi " + msg.arg1 + " : " + msg.arg2);
-                if (msg.arg1 == 1){// เน็ตใช้งานได้
+                if (msg.arg1 == 1){//2.1 หาก Internet ใช้งานได้ส่ง SMS ไป Server ทันที
                     onPostSmsToServer(sNameFile,sFrom, sTo, sMsg, sDate, sTime,sError,batt,context,msg.arg2 + 1);
-                }else {
+                }else {//2.1 หากไม่มีการเชื่อมต่อ Internet ให้
                     int noWifi = (msg.arg2 + 1);
                     if (noWifi == 1){
                         String wifi1 = getStringShare(context,Utile.SHARE_NAME_WIFI1,"");
@@ -267,13 +266,17 @@ public class SendData {
 
                     Response response = client.newCall(request).execute();
                     String data = response.body().string().toString() + "";
-                    onShowLogCat("*** Data SMS ***", data);
+                    JSONObject jObject = new JSONObject(CoverStringFromServer_One(data));
                     if (backgroundHandlerThreadSms != null){
                         backgroundHandlerThreadSms.quit();
                     }
-                    writerSms(sNameFile,sFrom,sTo,sMsg,sDate,sTime,sError,batt,1,context);//ส่งแล้ว ไม่มี Error เขียน SMS ลงเครื่อง
-
-                }catch (Exception e){
+                    onShowLogCat("*** Data SMS ***", data);
+                    if ((jObject.isNull("status") ? "" : jObject.getString("status")).equals("1")){
+                        writerSms(sNameFile,sFrom,sTo,sMsg,sDate,sTime,sError,batt,1,context);//ส่งแล้ว ไม่มี Error เขียน SMS ลงเครื่อง
+                    }else {
+                        writerSms(sNameFile,sFrom,sTo,sMsg,sDate,sTime,sError,batt,0,context);//ส่งแล้ว มี Error เขียน SMS ลงเครื่อง
+                    }
+                  }catch (Exception e){
                     if (backgroundHandlerThreadSms != null){
                         backgroundHandlerThreadSms.quit();
                     }
@@ -476,6 +479,7 @@ public class SendData {
         }
         return false;
     }
+
     private void onShowLogCat(String tag , String msg){
         if (BuildConfig.DEBUG){
             Log.e("SendData",tag + " : " + msg);

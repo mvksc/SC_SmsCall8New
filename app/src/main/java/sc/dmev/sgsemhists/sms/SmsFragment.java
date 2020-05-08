@@ -144,7 +144,7 @@ public class SmsFragment extends Fragment {
         if (evenBus != null){
             //Log.e("Check",evenBus.getKeyEvenBus() +"");
             if (evenBus.getKeyEvenBus() == 3){//Update list sms from device
-                customAdapterItemSms2.notifyItemChanged(0);
+                //customAdapterItemSms2.notifyItemChanged(0);
             }
         }
     }
@@ -396,6 +396,7 @@ public class SmsFragment extends Fragment {
                 Collections.sort(directoryListing, new SortFileName());
                 //Collections.sort(directoryListing, new SortFolder());
 
+                int indexNotSend = 0;
                 for (int i =/* dirFiles.length-1*/directoryListing.size()-1; i >= 0; i--) {
                     String fileOutput = /*dirFiles[i].toString();*/ directoryListing.get(i).toString();
                     StringBuilder builder = new StringBuilder();
@@ -420,7 +421,13 @@ public class SmsFragment extends Fragment {
                                 jObject.getString("sms_error").trim(),
                                 jObject.getString("sms_batt").trim(),
                                 jObject.getInt("sms_sented"));
-                        dataSet2.add(modelSms);
+                        if (jObject.getInt("sms_sented") == 0){
+                            dataSet2.add(indexNotSend,modelSms);
+                            indexNotSend++;
+                        }else if (jObject.getInt("sms_sented") == 1){
+                            dataSet2.add(modelSms);
+                        }
+
                         customAdapterItemSms2.notifyDataSetChanged();
                     }catch (Exception e){
                         ShowLogcat("Error", "Read SMS From file "+e.toString());
