@@ -3,7 +3,6 @@ package sc.dmev.sgsemhists.sms;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Parcelable;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -211,7 +210,7 @@ public class SmsFragment extends Fragment {
                         public void onClick(DialogInterface dialogInterface, int i) {
                             dialogInterface.dismiss();
                             dialogInterface.cancel();
-                            new SendData(sFileName,sFrom,sTo,sMsg,sDate,sTime,sError,sBatt,getActivity());
+                            new SendData(sFileName,sFrom,sTo,sMsg,sDate,sTime,sError,sBatt,1,getActivity());
                         }
                     }, new DialogInterface.OnClickListener() {
                         @Override
@@ -368,7 +367,8 @@ public class SmsFragment extends Fragment {
                         jObject.getString("sms_time").trim(),
                         "",
                         "",
-                        -1);
+                        -1,
+                        "");
 
                 dataSet.add(modelSms);
                 customAdapterItemSms.notifyDataSetChanged();
@@ -420,7 +420,8 @@ public class SmsFragment extends Fragment {
                                 jObject.getString("sms_time").trim(),
                                 jObject.getString("sms_error").trim(),
                                 jObject.getString("sms_batt").trim(),
-                                jObject.getInt("sms_sented"));
+                                jObject.getInt("sms_sented"),
+                                jObject.getString("sms_msg_error").trim());
                         if (jObject.getInt("sms_sented") == 0){
                             dataSet2.add(indexNotSend,modelSms);
                             indexNotSend++;

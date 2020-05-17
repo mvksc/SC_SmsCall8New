@@ -19,6 +19,14 @@ import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.util.Log;
 import android.widget.Toast;
+
+import org.json.JSONObject;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -167,8 +175,10 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
                         "\n  Error = " + sError);*/
 
                 //writerSms(nameFile,sFrom,sTo,sMsg,sDate,sTime,sError,batt);
+
                 String nameFile = "SMS" + System.currentTimeMillis() + ".json";
-                new SendData(nameFile,sFrom,sTo,sMsg,sDate,sTime,sError,batt,context);
+                writerSms(nameFile,sFrom,sTo,sMsg,sDate,sTime,sError,batt,1,context);
+                new SendData(nameFile,sFrom,sTo,sMsg,sDate,sTime,sError,batt,1,context);
             }
         }catch (Exception e){
             onShowLogCat("Error","save msm error " + e.getMessage());
@@ -268,7 +278,44 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
         boolean strShare = shLang.getBoolean(strKey, strDe);
         return strShare;
     }
+    public void writerSms(final String sNameFile,final String sFrom, final String sTo, final String sMsg,
+                          final String sDate, final String sTime, final String sError, final String batt,final int countSend,final Context context){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)){
+                        File myDir2 =new File(android.os.Environment.getExternalStorageDirectory()+ Utile.PATH_PUSH_SMS
+                                + "systems_sms",Utile.PATH_PUSH_SMS_CHILD);
+                        myDir2.mkdirs();
 
+                        //Date date= new Date();
+                        //long time = date.getTime();//1447402821007
+                        //Timestamp ts = new Timestamp(time);//2015-11-13 13:50:21.007
+
+                        File fileName2 = new File(myDir2, sNameFile);
+                        JSONObject jObSms = new JSONObject();
+                        jObSms.put("sms_filename", sNameFile);
+                        jObSms.put("sms_from", sFrom);
+                        jObSms.put("sms_to", sTo);
+                        jObSms.put("sms_text", sMsg);
+                        jObSms.put("sms_date", sDate);
+                        jObSms.put("sms_time", sTime);
+                        jObSms.put("sms_error", sError);
+                        jObSms.put("sms_batt", batt);
+                        jObSms.put("sms_sented", -1);//-1 = ไม่สนใจ, 0 = ยังไม่ส่ง, 1 = ส่งแล้ว
+
+                        Writer out2 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName2), "UTF8"));
+                        out2.write(jObSms.toString());
+                        out2.flush();
+                        out2.close();
+                    }
+                } catch (Exception e) {
+                    onShowLogCat("Error","PUSH_SMS Error! " + e.getMessage());
+                }
+            }
+        }).start();
+    }
 
 
     public void onShowToast(Context context, String msg){

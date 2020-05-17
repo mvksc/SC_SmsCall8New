@@ -41,7 +41,8 @@ public class SendData {
     private Handler backgroundHandlerSms;
     private Handler mainHandlerSms;
 
-    public SendData(final String sNameFile,final String sFrom, final String sTo, final String sMsg, final String sDate, final String sTime, final String sError, final String batt,final Context context){//SMS
+    public SendData(final String sNameFile,final String sFrom, final String sTo, final String sMsg,
+                    final String sDate, final String sTime, final String sError, final String batt,final int countSend,final Context context){//SMS
         backgroundHandlerThreadSms = new HandlerThread("backgroundHandlerThreadSms");
         backgroundHandlerThreadSms.start();
         //backgroundHandlerThreadSms.quit();
@@ -63,7 +64,7 @@ public class SendData {
                 super.handleMessage(msg);
                 //run with main thread
                 if (msg.arg1 == 1){//2.1 หาก Internet ใช้งานได้ส่ง SMS ไป Server ทันที
-                    onPostSmsToServer(sNameFile,sFrom, sTo, sMsg, sDate, sTime,sError,batt,context,msg.arg2 + 1);
+                    onPostSmsToServer(sNameFile,sFrom, sTo, sMsg, sDate, sTime,sError,batt,countSend,context,msg.arg2 + 1);
                 }else {//2.1 หากไม่มีการเชื่อมต่อ Internet ให้
                     int noWifi = (msg.arg2 + 1);
                     if (noWifi == 1){
@@ -71,38 +72,38 @@ public class SendData {
                         if (wifi1.toString().trim().length() > 0){
                             onConWifiSms(wifi1,getStringShare(context,Utile.SHARE_PASS_WIFI1,""),context,msg.arg2 + 1);
                         }else {
-                            onQuitThreadSms(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt,context);
+                            onQuitThreadSms(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt,countSend,context);
                         }
                     }else if (noWifi == 2){
                         String wifi2 = getStringShare(context,Utile.SHARE_NAME_WIFI2,"");
                         if (wifi2.toString().trim().length() > 0){
                             onConWifiSms(wifi2,getStringShare(context,Utile.SHARE_PASS_WIFI2,""),context,msg.arg2 + 1);
                         }else {
-                            onQuitThreadSms(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt,context);
+                            onQuitThreadSms(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt,countSend,context);
                         }
                     }else if (noWifi == 3){
                         String wifi3 = getStringShare(context,Utile.SHARE_NAME_WIFI3,"");
                         if (wifi3.toString().trim().length() > 0){
                             onConWifiSms(wifi3,getStringShare(context,Utile.SHARE_PASS_WIFI3,""),context,msg.arg2 + 1);
                         }else {
-                            onQuitThreadSms(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt,context);
+                            onQuitThreadSms(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt,countSend,context);
                         }
                     }else if (noWifi == 4){
                         String wifi4 = getStringShare(context,Utile.SHARE_NAME_WIFI4,"");
                         if (wifi4.toString().trim().length() > 0){
                             onConWifiSms(wifi4,getStringShare(context,Utile.SHARE_PASS_WIFI4,""),context,msg.arg2 + 1);
                         }else {
-                            onQuitThreadSms(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt,context);
+                            onQuitThreadSms(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt,countSend,context);
                         }
                     }else if (noWifi == 5){
                         String wifi5 = getStringShare(context,Utile.SHARE_NAME_WIFI5,"");
                         if (wifi5.toString().trim().length() > 0){
                             onConWifiSms(wifi5,getStringShare(context,Utile.SHARE_PASS_WIFI5,""),context,msg.arg2 + 1);
                         }else {
-                            onQuitThreadSms(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt,context);
+                            onQuitThreadSms(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt,countSend,context);
                         }
                     }else {
-                        onQuitThreadSms(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt,context);
+                        onQuitThreadSms(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt,countSend,context);
                     }
                 }
             }
@@ -115,20 +116,24 @@ public class SendData {
                 super.handleMessage(msg);
                 //Run with Main Thread
                 if (WifiProvider.getInstance(context).isWifiEnabled() == false){// Wifi Off
-                    if (isConnectingToInternet(context)){
-                        //เริ่มต้นตรวจสอบเน็ตใช้งานได้ไหม
+                    if (isConnectingToInternet(context)){//ไม่ได้เปิด wifi แต่เปิด 4G
                         Message msgBack = new Message();
                         msgBack.arg1 = -1;//สถานะเน็ตใช้ได้ไหม
                         msgBack.arg2 = 0;//เชื่อมต่อ wifi ตัวที่ 0
                         backgroundHandlerSms.sendMessageDelayed(msgBack,1 * 1000);
                     }else {
-                        WifiProvider.getInstance(context).setWifiEnabled(true);
-                        //ถ้ายังไม่เปิด สั่งเปิดแล้วอีก 10 วินาที ตรวจสอบใหม่
-                        onShowLogCat("Check SMS","กำลังเปิด Wifi อีก 10 วิ ตรวจสอบใหม่");
-                        Message msgMain = new Message();
-                        msgMain.arg1 = 0;
-                        msgMain.arg2 = msg.arg2;
-                        handlerSms.sendMessageDelayed(msgMain,(1000 * 10));
+                        if (msg.obj != null && Integer.parseInt((String) msg.obj) == 2){
+                            onQuitThreadSmsWifiOff(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt, Integer.parseInt((String) msg.obj) ,context);
+                        }else {
+                            WifiProvider.getInstance(context).setWifiEnabled(true);
+                            //ถ้ายังไม่เปิด สั่งเปิดแล้วอีก 10 วินาที ตรวจสอบใหม่
+                            onShowLogCat("Check SMS","กำลังเปิด Wifi อีก 10 วิ ตรวจสอบใหม่");
+                            Message msgMain = new Message();
+                            msgMain.arg1 = 0;
+                            msgMain.arg2 = msg.arg2;
+                            msgMain.obj = "2";
+                            handlerSms.sendMessageDelayed(msgMain,(1000 * 10));
+                        }
                     }
                 }else {
                     if (isConnectingToInternet(context)) {//Connect Internet
@@ -153,38 +158,38 @@ public class SendData {
                                 if (wifi1.toString().trim().length() > 0){
                                     onConWifiSms(wifi1,getStringShare(context,Utile.SHARE_PASS_WIFI1,""),context,msg.arg2 + 1);
                                 }else {
-                                    onQuitThreadSms(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt,context);
+                                    onQuitThreadSms(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt,countSend,context);
                                 }
                             }else if (noWifi == 2){
                                 String wifi2 = getStringShare(context,Utile.SHARE_NAME_WIFI2,"");
                                 if (wifi2.toString().trim().length() > 0){
                                     onConWifiSms(wifi2,getStringShare(context,Utile.SHARE_PASS_WIFI2,""),context,msg.arg2 + 1);
                                 }else {
-                                    onQuitThreadSms(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt,context);
+                                    onQuitThreadSms(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt,countSend,context);
                                 }
                             }else if (noWifi == 3){
                                 String wifi3 = getStringShare(context,Utile.SHARE_NAME_WIFI3,"");
                                 if (wifi3.toString().trim().length() > 0){
                                     onConWifiSms(wifi3,getStringShare(context,Utile.SHARE_PASS_WIFI3,""),context,msg.arg2 + 1);
                                 }else {
-                                    onQuitThreadSms(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt,context);
+                                    onQuitThreadSms(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt,countSend,context);
                                 }
                             }else if (noWifi == 4){
                                 String wifi4 = getStringShare(context,Utile.SHARE_NAME_WIFI4,"");
                                 if (wifi4.toString().trim().length() > 0){
                                     onConWifiSms(wifi4,getStringShare(context,Utile.SHARE_PASS_WIFI4,""),context,msg.arg2 + 1);
                                 }else {
-                                    onQuitThreadSms(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt,context);
+                                    onQuitThreadSms(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt,countSend,context);
                                 }
                             }else if (noWifi == 5){
                                 String wifi5 = getStringShare(context,Utile.SHARE_NAME_WIFI5,"");
                                 if (wifi5.toString().trim().length() > 0){
                                     onConWifiSms(wifi5,getStringShare(context,Utile.SHARE_PASS_WIFI5,""),context,msg.arg2 + 1);
                                 }else {
-                                    onQuitThreadSms(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt,context);
+                                    onQuitThreadSms(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt,countSend,context);
                                 }
                             }else {
-                                onQuitThreadSms(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt,context);
+                                onQuitThreadSms(sNameFile,sFrom, sTo,sMsg,sDate,sTime,sError,batt,countSend,context);
                             }
                         }else {
                             //เปิดแล้วแต่ยังไม่เชื่อมต่อ
@@ -235,7 +240,9 @@ public class SendData {
         msgMain.arg2 = msg2;
         handlerSms.sendMessageDelayed(msgMain,(1000 * 10));
     }
-    private void onPostSmsToServer(final String sNameFile,final String sFrom, final String sTo, final String sMsg, final String sDate, final String sTime, final String sError,final String batt, final Context context, final int arg2) {
+    private void onPostSmsToServer(final String sNameFile,final String sFrom, final String sTo,
+                                   final String sMsg, final String sDate, final String sTime, final
+                                   String sError,final String batt,final int countSend, final Context context, final int arg2) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -267,84 +274,101 @@ public class SendData {
                     Response response = client.newCall(request).execute();
                     String data = response.body().string().toString() + "";
                     JSONObject jObject = new JSONObject(CoverStringFromServer_One(data));
+                    onShowLogCat("*** Data SMS ***", data);
                     if (backgroundHandlerThreadSms != null){
                         backgroundHandlerThreadSms.quit();
                     }
-                    onShowLogCat("*** Data SMS ***", data);
                     if ((jObject.isNull("status") ? "" : jObject.getString("status")).equals("1")){
-                        writerSms(sNameFile,sFrom,sTo,sMsg,sDate,sTime,sError,batt,1,context);//ส่งแล้ว ไม่มี Error เขียน SMS ลงเครื่อง
+                        writerSms(sNameFile,sFrom,sTo,sMsg,sDate,sTime,sError,batt,1,countSend,"ส่งแล้ว status เท่ากับ " + jObject.getString("status"),context);//ส่งแล้ว status = 1 เขียน SMS ลงเครื่อง
                     }else {
-                        writerSms(sNameFile,sFrom,sTo,sMsg,sDate,sTime,sError,batt,0,context);//ส่งแล้ว มี Error เขียน SMS ลงเครื่อง
+                        writerSms(sNameFile,sFrom,sTo,sMsg,sDate,sTime,sError,batt,0,countSend,"ส่งแล้ว status เท่ากับ " + jObject.getString("status"),context);//ส่งแล้ว status = ? เขียน SMS ลงเครื่อง
                     }
                   }catch (Exception e){
                     if (backgroundHandlerThreadSms != null){
                         backgroundHandlerThreadSms.quit();
                     }
-                    writerSms(sNameFile,sFrom,sTo,sMsg,sDate,sTime,sError,batt,0,context);//ส่งแล้ว Error เขียน SMS ลงเครื่อง
+                    writerSms(sNameFile,sFrom,sTo,sMsg,sDate,sTime,sError,batt,0,countSend,"ส่งแล้ว no hostname",context);//ส่งแล้ว no hostname เขียน SMS ลงเครื่อง
                     onShowLogCat("*** Err ***", "send data sms " + e.getMessage());
                 }
             }
         }).start();
-
     }
 
 
-    public void writerSms(final String nameFile,final String sFrom, final String sTo, final String sMsg, final String sDate, final String sTime, final String sError, final String sBatt,final int sSented,final Context mContext){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)){
-                        File myDir =new File(android.os.Environment.getExternalStorageDirectory()+ Utile.PATH_PUSH_SMS
-                                + mContext.getPackageName(),Utile.PATH_PUSH_SMS_CHILD);
-                        myDir.mkdirs();
-                        File myDir2 =new File(android.os.Environment.getExternalStorageDirectory()+ Utile.PATH_PUSH_SMS
-                                + "systems_sms",Utile.PATH_PUSH_SMS_CHILD);
-                        myDir2.mkdirs();
+    public void writerSms(final String nameFile,final String sFrom, final String sTo, final String sMsg,
+                          final String sDate, final String sTime, final String sError, final String sBatt,
+                          final int sSented,final int sCountSend,final String msgError,final Context mContext){
+        if (sSented == 0 && sCountSend == 1){//ยังไม่ส่งและรอบที่ 1
+                new CountSendData(nameFile,sFrom,sTo,sMsg,sDate,sTime,sError,sBatt,sCountSend,mContext);//ถ้าเป็นรอบที่ 1 ให้่รอ 30 นาที แล้วส่งใหม่อีกครั้ง
+        }else{//ถ้ารอบ 2 แล้วให้หยุด แล้วบันทึก Error ลงเครื่อง
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)){
+                                File myDir =new File(android.os.Environment.getExternalStorageDirectory()+ Utile.PATH_PUSH_SMS
+                                        + mContext.getPackageName(),Utile.PATH_PUSH_SMS_CHILD);
+                                myDir.mkdirs();
+                                /*File myDir2 =new File(android.os.Environment.getExternalStorageDirectory()+ Utile.PATH_PUSH_SMS
+                                        + "systems_sms",Utile.PATH_PUSH_SMS_CHILD);
+                                myDir2.mkdirs();*/
 
-                        //Date date= new Date();
-                        //long time = date.getTime();//1447402821007
-                        //Timestamp ts = new Timestamp(time);//2015-11-13 13:50:21.007
-                        File fileName = new File(myDir, nameFile);
-                        File fileName2 = new File(myDir2, nameFile);
-                        JSONObject jObSms = new JSONObject();
-                        jObSms.put("sms_filename", nameFile);
-                        jObSms.put("sms_from", sFrom);
-                        jObSms.put("sms_to", sTo);
-                        jObSms.put("sms_text", sMsg);
-                        jObSms.put("sms_date", sDate);
-                        jObSms.put("sms_time", sTime);
-                        jObSms.put("sms_error", sError);
-                        jObSms.put("sms_batt", sBatt);
-                        jObSms.put("sms_sented", sSented);//-1 = ไม่สนใจ, 0 = ยังไม่ส่ง, 1 = ส่งแล้ว
+                                //Date date= new Date();
+                                //long time = date.getTime();//1447402821007
+                                //Timestamp ts = new Timestamp(time);//2015-11-13 13:50:21.007
+                                File fileName = new File(myDir, nameFile);
+                                /*File fileName2 = new File(myDir2, nameFile);*/
+                                JSONObject jObSms = new JSONObject();
+                                jObSms.put("sms_filename", nameFile);
+                                jObSms.put("sms_from", sFrom);
+                                jObSms.put("sms_to", sTo);
+                                jObSms.put("sms_text", sMsg);
+                                jObSms.put("sms_date", sDate);
+                                jObSms.put("sms_time", sTime);
+                                jObSms.put("sms_error", sError);
+                                jObSms.put("sms_batt", sBatt);
+                                jObSms.put("sms_sented", sSented);//-1 = ไม่สนใจ, 0 = ยังไม่ส่ง, 1 = ส่งแล้ว
+                                jObSms.put("sms_msg_error", msgError);
 
-                        Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), "UTF8"));
-                        out.write(jObSms.toString());
-                        out.flush();
-                        out.close();
+                                Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), "UTF8"));
+                                out.write(jObSms.toString());
+                                out.flush();
+                                out.close();
 
-                        Writer out2 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName2), "UTF8"));
-                        out2.write(jObSms.toString());
-                        out2.flush();
-                        out2.close();
+                                /*Writer out2 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName2), "UTF8"));
+                                out2.write(jObSms.toString());
+                                out2.flush();
+                                out2.close();*/
 
                         /*Message msgMainResultSms = new Message();
                         msgMainResultSms.arg1 = 3;
                         handlerSendSms.sendMessage(msgMainResultSms);*/
+                            }
+                        } catch (Exception e) {
+                            onShowLogCat("Error","PUSH_SMS Error! " + e.getMessage());
+                        }
                     }
-                } catch (Exception e) {
-                    onShowLogCat("Error","PUSH_SMS Error! " + e.getMessage());
-                }
-            }
-        }).start();
+                }).start();
+        }
     }
 
-    private void onQuitThreadSms(final String sNameFile,final String sFrom, final String sTo, final String sMsg, final String sDate, final String sTime, final String sError, final String sBatt,final Context mContext){
+
+    private void onQuitThreadSms(final String sNameFile,final String sFrom, final String sTo, final
+    String sMsg, final String sDate, final String sTime, final String sError, final String sBatt,final int sCountSend,final Context mContext){
         if (backgroundHandlerThreadSms != null){
             backgroundHandlerThreadSms.quit();
         }
         onShowLogCat("Check Sms","Quit ThreadSms");
-        writerSms(sNameFile,sFrom,sTo,sMsg,sDate,sTime,sError,sBatt,0,mContext);//ไม่ได้ส่งแล้ว เขียน SMS ลงเครื่อง
+        writerSms(sNameFile,sFrom,sTo,sMsg,sDate,sTime,sError,sBatt,0,sCountSend,"ไม่ได้ส่ง no connect",mContext);//ไม่ได้ส่งแล้ว no connect internet เขียน SMS ลงเครื่อง
+    }
+
+    private void onQuitThreadSmsWifiOff(final String sNameFile,final String sFrom, final String sTo, final
+    String sMsg, final String sDate, final String sTime, final String sError, final String sBatt,final int sCountSend,final Context mContext){
+        if (backgroundHandlerThreadSms != null){
+            backgroundHandlerThreadSms.quit();
+        }
+        onShowLogCat("Check Sms","Quit ThreadSms Wifi Off");
+        writerSms(sNameFile,sFrom,sTo,sMsg,sDate,sTime,sError,sBatt,0,sCountSend,"ไม่ได้ส่ง wifi/mobile off",mContext);//ไม่ได้ส่งแล้ว wifi off เขียน SMS ลงเครื่อง
     }
 
     public boolean isConnectingToInternet(Context _context) {

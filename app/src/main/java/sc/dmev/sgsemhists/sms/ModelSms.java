@@ -7,7 +7,7 @@ import android.os.Parcelable;
  * Created by Varayut on 15/11/2558.
  */
 public class ModelSms implements Parcelable {
-    public String from,to,msg,date,time,error,batt,namefile;
+    public String from,to,msg,date,time,error,batt,namefile,msgError;
     public int sented;//-1 = ไม่สนใจ, 0 = ยังไม่ส่ง, 1 = ส่งแล้ว
 
     public String getDate() {
@@ -80,7 +80,15 @@ public class ModelSms implements Parcelable {
         this.sented = sented;
     }
 
-    public ModelSms(String namefile, String from, String to, String msg, String date, String time, String error, String batt, int sented){
+    public String getMsgError() {
+        return msgError;
+    }
+
+    public void setMsgError(String msgError) {
+        this.msgError = msgError;
+    }
+
+    public ModelSms(String namefile, String from, String to, String msg, String date, String time, String error, String batt, int sented, String msgError){
         this.namefile = namefile;
         this.from = from;
         this.to = to;
@@ -90,6 +98,7 @@ public class ModelSms implements Parcelable {
         this.error = error;
         this.batt = batt;
         this.sented = sented;
+        this.msgError = msgError;
 
     }
 
@@ -103,6 +112,7 @@ public class ModelSms implements Parcelable {
         error = in.readString();
         batt = in.readString();
         sented = in.readInt();
+        msgError = in.readString();
     }
 
     public static final Creator<ModelSms> CREATOR = new Creator<ModelSms>() {
@@ -137,5 +147,6 @@ public class ModelSms implements Parcelable {
         out.writeString(error);
         out.writeString(batt);
         out.writeInt(sented);
+        out.writeString(msgError);
     }
 }

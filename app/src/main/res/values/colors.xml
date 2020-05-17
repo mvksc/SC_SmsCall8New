@@ -11,4 +11,6 @@
     <color name="color_title_menu_bottom_u">#AAdac375</color>
     <color name="color_bg_sent_sms">#FFFFFF</color>
     <color name="color_bg_not_sent_sms">#FB5656</color>
+    <color name="color_error_no_sent">#EAD204</color>
+    <color name="color_error_sent">#1C9A21</color>
 </resources>
