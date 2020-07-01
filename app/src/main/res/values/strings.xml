@@ -10,7 +10,7 @@
     <string name="title_no_connect">เชื่อมต่ออินเตอร์เน็ต</string>
     <string name="title_save">บันทึกสำเร็จ</string>
     <string name="title_action_net">รับทราบ</string>
-    <string name="txt_version">เวรอ์ชั่น : V.6</string>
+    <string name="txt_version">เวรอ์ชั่น : V.7</string>
     <string name="txt_no_auto_sim">***ไม่สามารถดึงเบอร์โทรอัตโนมัติได้\nกรุณากรอกเบอร์โทรให้ถูกต้องแล้วกดบันทึก</string>
     <string name="txt_add_wifi">เพิ่ม Wifi</string>
     <string name="txt_add_wifi_ok">ตกลง</string>

@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         onSelectMenuBottom(KEY_MENU);
         String url = allCommand.getStringShare(MainActivity.this, Utile.SHARE_URL, "");//ตรวจสอบกรอก url ครั้งแรก
         if (url == null || url.trim().equals("")){
-            allCommand.saveStringShare(MainActivity.this,Utile.SHARE_URL,"x1.autobet.com");
+            allCommand.saveStringShare(MainActivity.this,Utile.SHARE_URL,"xx.auto8bet.com");
         }
     }
     @Override
