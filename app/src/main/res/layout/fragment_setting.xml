@@ -161,6 +161,21 @@
                         android:paddingTop="@dimen/pad_edittext_login"
                         android:paddingBottom="@dimen/pad_edittext_login">
                         <Switch
+                            android:id="@+id/swSmsDefault"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="#AA000000"
+                            android:padding="@dimen/pad_edittext_login"
+                            android:text="@string/txt_default_sms"
+                            android:textSize="@dimen/text_size_editext_login"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingTop="@dimen/pad_edittext_login"
+                        android:paddingBottom="@dimen/pad_edittext_login">
+                        <Switch
                             android:id="@+id/swSmsAlert"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"

@@ -17,4 +17,5 @@
     <string name="txt_exit_app">กดอีกครั้งเพื่อออกจากแอพ</string>
     <string name="txt_alert_sms">สั่นเตือนเมื่อข้อความเข้า</string>
     <string name="txt_sms_from_server">แสดงข้อความในเครื่อง</string>
+    <string name="txt_default_sms">ตั้งเป็นแอปเริ่มต้น</string>
 </resources>

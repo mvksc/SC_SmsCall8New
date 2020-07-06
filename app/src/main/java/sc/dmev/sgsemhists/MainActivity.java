@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout lnMenuSms,lnMenuSetting;
     private ImageView imgMenuSms,imgMenuSetting;
     private TextView tvMenuSms,tvMenuSetting;
-    private static final int REQUEST_MUTIPLE = 1,REQUEST_DEFAULT_APP = 2;
+    private static final int REQUEST_MUTIPLE = 1,REQUEST_DEFAULT_APP = 2,REQUEST_SET_DEFAULT_APP = 3;
     private boolean doubleBackToExitPressedOnce = false;
 
     @Override
@@ -251,6 +251,10 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 allowMultipleSuccess();
             }
+        }else if (requestCode == REQUEST_SET_DEFAULT_APP){
+            ModelEvenBus evenBus = new ModelEvenBus();
+            evenBus.setKeyEvenBus(4);
+            BusProvider.getInstance().post(evenBus);
         }
     }
 
@@ -274,6 +278,15 @@ public class MainActivity extends AppCompatActivity {
             if (evenBus.getKeyEvenBus() == 2){//Check Allow Permission
                 //onPermissionMultiple();
                 onChangeDefaultApp();
+            }else if (evenBus.getKeyEvenBus() == 3){
+                final String packageName = getPackageName();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    if(!Telephony.Sms.getDefaultSmsPackage(MainActivity.this).equals(packageName)) {
+                        Intent intent = new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
+                        intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, packageName);
+                        startActivityForResult(intent,REQUEST_SET_DEFAULT_APP);
+                    }
+                }
             }
         }
     }

@@ -2,19 +2,26 @@ package sc.dmev.sgsemhists.setting;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Telephony;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +32,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import com.google.android.material.snackbar.Snackbar;
@@ -41,6 +49,7 @@ import sc.dmev.sgsemhists.AllCommand;
 import sc.dmev.sgsemhists.BuildConfig;
 import sc.dmev.sgsemhists.FormatHttpPostOkHttp.BasicNameValusPostOkHttp;
 import sc.dmev.sgsemhists.FormatHttpPostOkHttp.FromHttpPostOkHttp;
+import sc.dmev.sgsemhists.MainActivity;
 import sc.dmev.sgsemhists.R;
 import sc.dmev.sgsemhists.bus.BusProvider;
 import sc.dmev.sgsemhists.bus.ModelEvenBus;
@@ -57,8 +66,7 @@ public class SettingFragment extends Fragment {
     private AllCommand allCommand;
     private CoordinatorLayout coorLayout;
     private Snackbar snackbar = null;
-    private boolean isPause = false;
-    private Switch swSmsAlert;
+    private Switch swSmsAlert,swSmsDefault;
 
     public SettingFragment() {}
 
@@ -103,6 +111,7 @@ public class SettingFragment extends Fragment {
         edPassWifi5.setText(allCommand.getStringShare(getActivity(),Utile.SHARE_PASS_WIFI5,""));
 
         swSmsAlert.setChecked(allCommand.getBooleanShare(getActivity(),Utile.SHARE_IS_VIBRATE_SMS,false));
+        swSmsDefault.setChecked(isDefaultApp());
 
         tvSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -205,6 +214,34 @@ public class SettingFragment extends Fragment {
                 allCommand.saveBooleanShare(getActivity(),Utile.SHARE_IS_VIBRATE_SMS,b);
             }
         });
+
+        swSmsDefault.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                final String packageName = getActivity().getPackageName();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    if (isChecked){
+                        if(!Telephony.Sms.getDefaultSmsPackage(getActivity()).equals(packageName)) {
+                            ModelEvenBus evenBus = new ModelEvenBus();
+                            evenBus.setKeyEvenBus(3);//เปิดตั้งค่าแอปเริ่มต้น
+                            BusProvider.getInstance().post(evenBus);
+                        }
+                    }else {
+                        swSmsDefault.setChecked(isDefaultApp());
+                        if(Telephony.Sms.getDefaultSmsPackage(getActivity()).equals(packageName)) {
+                            showMessageOK("คุณได้ตั้ง "+ getResources().getString(R.string.app_name)+" เป็นแอปเริ่มต้นแล้ว", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                    dialogInterface.cancel();
+                                }
+                            });
+                        }
+                    }
+
+                }
+            }
+        });
     }
 
     @SuppressLint("MissingPermission")
@@ -268,6 +305,7 @@ public class SettingFragment extends Fragment {
         tvNameWifi = rootView.findViewById(R.id.tvNameWifi);
         tvNoAutoSim = rootView.findViewById(R.id.tvNoAutoSim);
         swSmsAlert = rootView.findViewById(R.id.swSmsAlert);
+        swSmsDefault = rootView.findViewById(R.id.swSmsDefault);
     }
     public void isInternetHost(final String host){
         new AsyncTask<String, Void, Boolean>() {
@@ -329,6 +367,7 @@ public class SettingFragment extends Fragment {
             if (evenBus.getKeyEvenBus() == 1){//Allow Permission
                 onShowLogCat("onStanByEvenBus","onStanByEvenBus");
                 tilEdPhone1.setError(null);
+                swSmsDefault.setChecked(isDefaultApp());
                 getPhoneSimAuto();
                 String sim1 = allCommand.getStringShare(getActivity(),Utile.SHARE_PHONE1,"");
                 String sim2 = allCommand.getStringShare(getActivity(),Utile.SHARE_PHONE2,"");
@@ -340,6 +379,8 @@ public class SettingFragment extends Fragment {
                 tilEdPingIP.setError(null);
                 allCommand.saveStringShare(getActivity(), Utile.SHARE_PING_IP, edPingIP.getText().toString().trim());
                 isShowSnackbarPhone(getActivity());
+            }else if (evenBus.getKeyEvenBus() == 4){
+                swSmsDefault.setChecked(isDefaultApp());
             }
         }
     }
@@ -394,6 +435,24 @@ public class SettingFragment extends Fragment {
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
+    }
+    private boolean isDefaultApp(){
+        final String packageName = getActivity().getPackageName();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if(!Telephony.Sms.getDefaultSmsPackage(getActivity()).equals(packageName)) {
+                return false;
+            }else {
+                return true;
+            }
+        }
+        return false;
+    }
+    private void showMessageOK(String message, DialogInterface.OnClickListener okListener) {
+        new AlertDialog.Builder(getActivity())
+                .setMessage(message)
+                .setPositiveButton("ตกลง", okListener)
+                .create()
+                .show();
     }
     private void onShowLogCat(String tag, String msg){
         if (BuildConfig.DEBUG){
